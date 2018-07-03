@@ -1,0 +1,29 @@
+.flex-box() {
+  display: flex;
+}
+
+.inline-flexbox() {
+  display: inline-flex;
+}
+
+.flex(@num) {
+  flex: @num;
+}
+
+.justify(@align) {
+  -webkit-justify-content: @align;
+  justify-content: @align;
+}
+
+.align(@align) {
+  -webkit-align-items: @align;
+  align-items: @align;
+}
+
+.box-shadow(@style, @c) when (iscolor(@c)) {
+  -webkit-box-shadow: @style @c;
+  box-shadow:         @style @c;
+}
+.box-shadow(@style, @alpha: 50%) when (isnumber(@alpha)) {
+  .box-shadow(@style, rgba(0, 0, 0, @alpha));
+}
