@@ -67,7 +67,6 @@ export default class Infobox extends Component {
       'enableAutoPan',
       'align',
       'offset',
-      'closeIconUrl',
       'width',
       'height',
       'maxWidth',

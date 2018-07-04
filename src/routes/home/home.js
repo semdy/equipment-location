@@ -10,7 +10,7 @@ import {
   PercentageCircle
 } from '../../components';
 import classnames from 'classnames';
-import {Input, Select} from 'antd';
+import {Input, Select, Popover} from 'antd';
 import styles from './home.less';
 
 const Option = Select.Option;
@@ -36,7 +36,7 @@ export default class Home extends Component {
     markers: [
       {
         position: {lng: 119.0874, lat: 36.665582},
-        icon: "simple_blue"
+        icon: "simple_red"
       }
     ],
     infobox: {
@@ -44,15 +44,6 @@ export default class Home extends Component {
       isOpen: false
     }
   };
-
-  handleMarkerClick(position) {
-    this.setState({
-      infobox: {
-        position: position,
-        isOpen: true
-      }
-    });
-  }
 
   handleMarkerOver(position) {
     this.setState({
@@ -77,7 +68,7 @@ export default class Home extends Component {
 
   render() {
     const {statusList} = this.props.home;
-    const { markers, infobox } = this.state;
+    const {markers, infobox} = this.state;
     return (
       <div className={styles.container}>
         <header className={styles.header}>
@@ -132,7 +123,7 @@ export default class Home extends Component {
           </div>
           <div className={styles.mapContainer}>
             <Map
-              center = {{
+              center={{
                 lng: 105.403119,
                 lat: 38.028658
               }}
@@ -145,15 +136,10 @@ export default class Home extends Component {
                       position={marker.position}
                       icon={marker.icon}
                       events={{
-                        click: this.handleMarkerClick.bind(this, marker.position),
                         mouseover: this.handleMarkerOver.bind(this, marker.position),
                         mouseout: this.handleMarkerMouseout.bind(this)
                       }}
                     >
-                      <div>
-                         欢迎使用百度地图！
-                         <img src='http://map.baidu.com/img/logo-map.gif' border='0' />
-                      </div>
                     </Marker>
                   ))
                 }
@@ -162,13 +148,29 @@ export default class Home extends Component {
                 position={infobox.position}
                 isOpen={infobox.isOpen}
                 offset={
-                  new BMap.Size(100, 100)
+                  new BMap.Size(-88, 35)
                 }
               >
-                <div>123</div>
+                <div className="ant-popover ant-popover-placement-top map-popover" style={{position: 'relative'}}>
+                  <div className="ant-popover-content">
+                    <div className="ant-popover-arrow">
+                    </div>
+                    <div className="ant-popover-inner">
+                      <div>
+                        <div className="ant-popover-title">Title</div>
+                        <div className="ant-popover-inner-content">
+                          <a>Close</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </InfoBox>
             </Map>
           </div>
+
+          <Popover visible={false}>
+          </Popover>
 
           <div className={styles.toolWrap}>
             <div className={styles.topTool}>
@@ -180,21 +182,21 @@ export default class Home extends Component {
               <div className={classnames(styles.panelCommon, styles.toolPanelHd)}>
                 工具箱号：A001
               </div>
-              <div className={classnames(styles.panelCommon,styles.toolItem)}>
+              <div className={classnames(styles.panelCommon, styles.toolItem)}>
                 <p>最近定位时间：2018/6/21 17:07</p>
                 <p>任务状态：执行</p>
                 <p>工具状态：可调配</p>
                 <p>设备状态: 正常</p>
               </div>
 
-              <div className={classnames(styles.panelCommon,styles.toolItem)}>
+              <div className={classnames(styles.panelCommon, styles.toolItem)}>
                 <p>起始位置：上海第一人民医院</p>
                 <p>经过位置：上海第一人民医院 上海第二人民医院</p>
                 <p>当前位置：上海市徐汇区龙漕路路</p>
                 <p>到达位置：上海市现金医院</p>
               </div>
 
-              <div className={classnames(styles.panelCommon,styles.toolItem)}>
+              <div className={classnames(styles.panelCommon, styles.toolItem)}>
                 <h4>工具箱数：6</h4>
                 <div>
                   <p>工具箱A：3</p>

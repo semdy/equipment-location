@@ -41,10 +41,10 @@ var icons = {
     imageOffset: new BMap.Size(-450 / 2, -278 / 2),
     anchor: new BMap.Size(50 / 2 / 2, 80 / 2),
     imageSize: new BMap.Size(600 / 2, 600 / 2)
-  }),
-}
+  })
+};
 
-for (var i = 1; i <= 10; i++) {
+for (let i = 1; i <= 10; i++) {
   icons['red' + i] = new BMap.Icon(defaultIconUrl, new BMap.Size(42 / 2, 66 / 2), {
     imageOffset: new BMap.Size(0 - 42 / 2 * (i - 1), 0),
     anchor: new BMap.Size(42 / 2 / 2, 66 / 2 / 2),
@@ -201,10 +201,11 @@ export default class App extends Component {
       let icon;
       let propsIcon = this.props.icon;
 
-      if (propsIcon && propsIcon instanceof BMap.Icon) {
-        icon = propsIcon;
-      } else {
-        if (propsIcon && icons[propsIcon]) {
+      if (propsIcon) {
+        if (propsIcon instanceof BMap.Icon) {
+          icon = propsIcon;
+        }
+        else if (icons[propsIcon]) {
           icon = icons[propsIcon];
         }
       }
@@ -219,7 +220,7 @@ export default class App extends Component {
       this.bindEvent(this.marker, this.events);
 
       if (mgr) {
-        mgr.addMarker(this.marker, 1, 100);
+        mgr.addMarker(this.marker);
       } else {
         map.addOverlay(this.marker);
       }

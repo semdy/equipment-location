@@ -25,7 +25,7 @@ var setStyles = function (element, styles) {
 
 var createElement = function (tagName, attributes) {
   var el = document.createElement(tagName);
-    attributes = attributes || {};
+  attributes = attributes || {};
   for (var i in attributes) {
     el.setAttribute(i, attributes[i]);
   }
@@ -33,32 +33,6 @@ var createElement = function (tagName, attributes) {
   return el;
 };
 
-
-/**
- * @exports InfoBox as InfoBox
- */
-
-/**
- * InfoBox类的构造函数
- * @class InfoBox <b>入口</b>。
- * 可以自定义border,margin,padding,关闭按钮等等。
- * @constructor
- * @param {Map} map Baidu map的实例对象.
- * @param {String} content infoBox中的内容.
- * @param {Json Object} opts 可选的输入参数，非必填项。可输入选项包括：<br />
- * {<br />"<b>offset</b>" : {Size} infoBox的偏移量
-         * <br />"<b>boxClass</b>" : {String} 定义infoBox的class,
-         * <br />"<b>boxStyle</b>" : {Json} 定义infoBox的style,此项会覆盖boxClass<br />
-         * <br />"<b>closeIconMargin</b>" : {String} 关闭按钮的margin    <br />
-         * <br />"<b>closeIconUrl</b>" : {String} 关闭按钮的url地址    <br />
-         * <br />"<b>enableAutoPan</b>" : {Boolean} 是否启动自动平移功能    <br />
-         * <br />"<b>align</b>" : {Number} 基于哪个位置进行定位，取值为[INFOBOX_AT_TOP,INFOBOX_AT_BOTTOM]<br />
-         * }<br />.
- * @example <b>参考示例：</b><br />
- * var infoBox = new InfoBox(map,"百度地图api",{boxStyle:{background:"url('tipbox.gif') no-repeat
-          center top",width: "200px"},closeIconMargin: "10px 2px 0 0",enableAutoPan: true
-          ,alignBottom: false});
- */
 var InfoBox = function (map, content, opts) {
 
   this._content = content || "";
@@ -70,7 +44,6 @@ var InfoBox = function (map, content, opts) {
   this._opts.boxClass = opts.boxClass || "infoBox";
   this._opts.boxStyle = opts.boxStyle || {};
   this._opts.closeIconMargin = opts.closeIconMargin || "2px";
-  this._opts.closeIconUrl = opts.closeIconUrl;
   this._opts.enableAutoPan = opts.enableAutoPan ? true : false;
   this._opts.align = opts.align || InfoBox.INFOBOX_AT_TOP;
 };
@@ -119,14 +92,7 @@ InfoBox.prototype.initialize = function (map) {
 InfoBox.prototype.draw = function () {
   this._isOpen && this._adjustPosition(this._point);
 };
-/**
- * 打开infoBox
- * @param {Marker|Point} anchor 要在哪个marker或者point上打开infobox
- * @return none
- *
- * @example <b>参考示例：</b><br />
- * infoBox.open();
- */
+
 InfoBox.prototype.open = function (anchor) {
   var me = this, poi;
   if (!this._isOpen) {
@@ -167,13 +133,7 @@ InfoBox.prototype.open = function (anchor) {
   this._panBox();
   this._adjustPosition(this._point);
 };
-/**
- * 关闭infoBox
- * @return none
- *
- * @example <b>参考示例：</b><br />
- * infoBox.close();
- */
+
 InfoBox.prototype.close = function () {
   if (this._isOpen) {
     this._map.removeOverlay(this);
@@ -183,34 +143,6 @@ InfoBox.prototype.close = function () {
   }
 };
 
-/**
- * 打开infoBox时，派发事件的接口
- * @name InfoBox#Open
- * @event
- * @param {Event Object} e 回调函数会返回event参数，包括以下返回值：
- * <br />{"<b>target</b> : {BMap.Overlay} 触发事件的元素,
-     * <br />"<b>type</b>：{String} 事件类型,
-     * <br />"<b>point</b>：{Point} infoBox的打开位置}
- *
- * @example <b>参考示例：</b>
- * infoBox.addEventListener("open", function(e) {
-     *     alert(e.type);
-     * });
- */
-/**
- * 关闭infoBox时，派发事件的接口
- * @name InfoBox#Close
- * @event
- * @param {Event Object} e 回调函数会返回event参数，包括以下返回值：
- * <br />{"<b>target</b> : {BMap.Overlay} 触发事件的元素,
-     * <br />"<b>type</b>：{String} 事件类型,
-     * <br />"<b>point</b>：{Point} infoBox的关闭位置}
- *
- * @example <b>参考示例：</b>
- * infoBox.addEventListener("close", function(e) {
-     *     alert(e.type);
-     * });
- */
 /**
  * 启用自动平移
  * @return none
@@ -287,10 +219,6 @@ InfoBox.prototype.getOffset = function () {
 InfoBox.prototype._remove = function () {
   var me = this;
   if (this.domElement && this.domElement.parentNode) {
-    //防止内存泄露
-    if (this._opts.closeIconUrl) {
-      this._div.firstChild.removeEventListener("click", me._closeHandler(), false);
-    }
     this.domElement.parentNode.removeChild(this.domElement);
   }
   this.domElement = null;
@@ -299,18 +227,6 @@ InfoBox.prototype._remove = function () {
 };
 
 Object.assign(InfoBox.prototype, {
-  /**
-   * 获取关闭按钮的html
-   * @return IMG 关闭按钮的HTML代码
-   */
-  _getCloseIcon: function () {
-    if (this._opts.closeIconUrl) {
-      var img = "<img src='" + this._opts.closeIconUrl + "' align='right' style='position:absolute;right:0px;cursor:pointer;margin:" + this._opts.closeIconMargin + "'/>";
-      return img;
-    } else {
-      return '';
-    }
-  },
   /**
    * 设置infoBox的内容
    * @param {String|HTMLElement} content 弹出气泡中的内容
@@ -323,19 +239,13 @@ Object.assign(InfoBox.prototype, {
     if (!this._div) {
       return;
     }
-    var closeHtml = this._getCloseIcon();
     //string类型的content
     if (typeof content.nodeType === "undefined") {
-      this._div.innerHTML = closeHtml + content;
+      this._div.innerHTML = content;
     } else {
-      this._div.innerHTML = closeHtml;
       this._div.appendChild(content);
     }
     this._content = content;
-    //添加click关闭infobox事件
-    if (closeHtml) {
-      this._addEventToClose();
-    }
 
   },
   /**
@@ -364,9 +274,9 @@ Object.assign(InfoBox.prototype, {
     }
 
     if (this._marker) {
-      this._div.style.left = pixel.x - icon.anchor.width + this._marker.getOffset().width + icon.infoWindowAnchor.width - this._boxWidth / 2 + "px";
+      this._div.style.left = pixel.x + this._opts.offset.width - icon.anchor.width + this._marker.getOffset().width + icon.infoWindowAnchor.width - this._boxWidth / 2 + "px";
     } else {
-      this._div.style.left = pixel.x - this._boxWidth / 2 + "px";
+      this._div.style.left = pixel.x + this._opts.offset.width - this._boxWidth / 2 + "px";
     }
   },
   /**
@@ -384,25 +294,6 @@ Object.assign(InfoBox.prototype, {
   _getInfoBoxSize: function () {
     this._boxWidth = parseInt(this._div.offsetWidth, 10);
     this._boxHeight = parseInt(this._div.offsetHeight, 10);
-  },
-  /**
-   * 添加关闭事件
-   * @return none
-   */
-  _addEventToClose: function () {
-    var me = this;
-    this._div.firstChild.addEventListener("click", me._closeHandler(), false);
-    this._hasBindEventClose = true;
-  },
-  /**
-   * 处理关闭事件
-   * @return none
-   */
-  _closeHandler: function () {
-    var me = this;
-    return function (e) {
-      me.close();
-    }
   },
   /**
    * 阻止事件冒泡
