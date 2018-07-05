@@ -18,7 +18,7 @@ const AnimateEl = (props) => {
   });
 
   return (
-    <div className={className} style={newStyle}/>
+    <div className={className} style={newStyle} />
   );
 };
 
