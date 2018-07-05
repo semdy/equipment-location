@@ -17,7 +17,9 @@ const AnimateEl = (props) => {
     display: visible ? undefined : 'none'
   });
 
-  return <div className={className} style={newStyle}/>;
+  return (
+    <div className={className} style={newStyle}/>
+  );
 };
 
 class Animate extends Component {
