@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import RcAnimate from 'rc-animate';
-import '../../components/animate/animate.less';
+import './animate.less';
 
 const AnimateEl = (props) => {
   const {
