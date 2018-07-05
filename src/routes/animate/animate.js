@@ -20,7 +20,9 @@ export default class AnimateApp extends Component {
         style={{width: 100, height: 100, margin: 50, border:'1px solid #ff0000'}}
         onClick={() => this.handleChange()}
       >
-        123
+        <span>
+          123
+        </span>
       </Animate>
     )
   }

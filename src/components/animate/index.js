@@ -8,7 +8,17 @@ const AnimateEl = (props) => {
     style,
     visible,
     removeable,
-    className
+    component,
+    componentProps,
+    showProp,
+    exclusive,
+    transitionName,
+    transitionAppear,
+    transitionEnter,
+    transitionLeave,
+    onEnd,
+    animation,
+    ...restProps
   } = props;
 
   if (!visible && removeable) return null;
@@ -18,7 +28,7 @@ const AnimateEl = (props) => {
   });
 
   return (
-    <div className={className} style={newStyle} />
+    <div {...restProps} style={newStyle} />
   );
 };
 
