@@ -8,17 +8,7 @@ const AnimateEl = (props) => {
     style,
     visible,
     removeable,
-    component,
-    componentProps,
-    showProp,
-    exclusive,
-    transitionName,
-    transitionAppear,
-    transitionEnter,
-    transitionLeave,
-    onEnd,
-    animation,
-    ...restProps
+    className
   } = props;
 
   if (!visible && removeable) return null;
@@ -27,7 +17,7 @@ const AnimateEl = (props) => {
     display: visible ? undefined : 'none'
   });
 
-  return <div {...restProps} style={newStyle}/>;
+  return <div className={className} style={newStyle}/>;
 };
 
 class Animate extends Component {
