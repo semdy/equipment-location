@@ -3,9 +3,11 @@ const path = require('path');
 
 module.exports = (webpackConfig, env) => {
 
+  const iconPath = path.resolve(__dirname, 'src/assets/icons');
+
   webpackConfig.module.rules.forEach(item => {
     if (String(item.loader).indexOf('url-loader') > -1) {
-      item.exclude.push(/\.svg$/)
+      item.exclude.push(iconPath)
     }
   });
 
@@ -13,11 +15,9 @@ module.exports = (webpackConfig, env) => {
     ...webpackConfig.module.rules,
     ...[
       {
-        test: /\.(svg)$/i,
+        test: /\.svg$/i,
         loader: 'svg-sprite-loader',
-        include: [
-          path.resolve(__dirname, 'src/assets/icons')
-        ]
+        include: iconPath
       }
     ]
   ];
@@ -26,7 +26,7 @@ module.exports = (webpackConfig, env) => {
     new SpriteLoaderPlugin(({
       plainSprite: true,
       spriteAttrs: {
-        id: '__SVG_SPRITE_NODE__'
+        id: 'SVG_SPRITE_NODE'
       }
     })),
   ]);

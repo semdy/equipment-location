@@ -1,4 +1,5 @@
 export { default as Spinner } from "./Spinner";
+export { default as Icon } from "./Icon";
 export { default as Input } from './Input';
 export { default as PercentageCircle } from './percentage-circle';
 

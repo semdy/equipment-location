@@ -2,7 +2,6 @@ const path = require('path');
 export default {
   entry: 'src/index.js',
   extraBabelPlugins: [
-    'transform-runtime',
     ['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }],
   ],
   env: {

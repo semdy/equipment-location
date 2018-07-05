@@ -3,6 +3,7 @@ import {connect} from 'dva';
 import BMap from 'BMap';
 import {
   Spinner,
+  Icon,
   Map,
   Marker,
   InfoBox,
@@ -174,9 +175,11 @@ export default class Home extends Component {
 
           <div className={styles.toolWrap}>
             <div className={styles.topTool}>
+              <Icon name='arrow-down-ob' style={{marginRight: 5}} />
               <span>工具箱号</span>
             </div>
             <div className={styles.sideTool}>
+              <Icon name='angle-right' />
             </div>
             <div className={styles.toolPanel}>
               <div className={classnames(styles.panelCommon, styles.toolPanelHd)}>
@@ -207,6 +210,7 @@ export default class Home extends Component {
             </div>
 
             <div className={styles.bottomTool}>
+              <Icon name='arrow-up-ob' style={{marginRight: 5}}/>
               <span>隐藏</span>
             </div>
 

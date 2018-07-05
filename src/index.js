@@ -3,6 +3,12 @@ import './index.less';
 
 import createLoading from 'dva-loading';
 
+// requires and returns all modules that match
+const requireAll = requireContext => requireContext.keys().map(requireContext);
+// import all svg
+const req = require.context('./assets/icons', true, /\.svg$/);
+requireAll(req);
+
 // 1. Initialize
 const app = dva({
     onError(e, dispatch) {
@@ -21,11 +27,3 @@ app.router(require('./router').default);
 
 // 5. Start
 app.start('#root');
-
-/*
-// requires and returns all modules that match
-const requireAll = requireContext => requireContext.keys().map(requireContext);
-// import all svg
-const req = require.context('./assets/icons', true, /\.svg$/);
-requireAll(req);
-*/
