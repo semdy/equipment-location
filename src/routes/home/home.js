@@ -8,6 +8,7 @@ import {
   Marker,
   InfoBox,
   MarkerGroup,
+  MarkerIcon,
   PercentageCircle
 } from '../../components';
 import classnames from 'classnames';
@@ -43,7 +44,9 @@ export default class Home extends Component {
     infobox: {
       position: {lng: 116.402544, lat: 39.928216},
       isOpen: false
-    }
+    },
+    toolxhide: false,
+    toolyhide: false
   };
 
   handleMarkerOver(position) {
@@ -63,13 +66,28 @@ export default class Home extends Component {
     });
   }
 
+  toggleToolPanel(type) {
+    switch (type) {
+      case 'x-hide':
+        this.setState({
+          toolxhide: !this.state.toolxhide
+        });
+        break;
+      case 'y-hide':
+        this.setState({
+          toolyhide: !this.state.toolyhide
+        });
+        break;
+    }
+  }
+
   componentDidMount() {
     this.props.addTodo();
   }
 
   render() {
     const {statusList} = this.props.home;
-    const {markers, infobox} = this.state;
+    const {markers, infobox, toolxhide, toolyhide} = this.state;
     return (
       <div className={styles.container}>
         <header className={styles.header}>
@@ -173,15 +191,22 @@ export default class Home extends Component {
           <Popover visible={false}>
           </Popover>
 
-          <div className={styles.toolWrap}>
-            <div className={styles.topTool}>
-              <Icon name='arrow-down-ob' style={{marginRight: 5}} />
-              <span>工具箱号</span>
+          <div className={classnames(styles.toolWrap, {[styles.xhide]: toolxhide})}
+               style={{bottom: toolyhide ? 'auto' : '0'}}
+          >
+            <div className={styles.topTool}
+                 onClick={() => this.toggleToolPanel('y-hide')}
+            >
+              <Icon name='arrow-down-ob' style={{marginRight: 5}}/>
+              <span className={styles.routeHint}>工具箱号</span>
             </div>
-            <div className={styles.sideTool}>
-              <Icon name='angle-right' />
+            <div className={classnames(styles.sideTool, {[styles.reverse]: toolxhide})}
+                 style={{display: toolyhide ? 'none' : ''}}
+                 onClick={() => this.toggleToolPanel('x-hide')}
+            >
+              <Icon name='angle-right'/>
             </div>
-            <div className={styles.toolPanel}>
+            <div className={classnames(styles.toolPanel, {[styles.yhide]: toolyhide})}>
               <div className={classnames(styles.panelCommon, styles.toolPanelHd)}>
                 工具箱号：A001
               </div>
@@ -193,10 +218,22 @@ export default class Home extends Component {
               </div>
 
               <div className={classnames(styles.panelCommon, styles.toolItem)}>
-                <p>起始位置：上海第一人民医院</p>
-                <p>经过位置：上海第一人民医院 上海第二人民医院</p>
-                <p>当前位置：上海市徐汇区龙漕路路</p>
-                <p>到达位置：上海市现金医院</p>
+                <div className={styles.routeItem}>
+                  <MarkerIcon type='start'/>
+                  <span className={styles.routeHint}>起始位置：上海第一人民医院</span>
+                </div>
+                <div className={styles.routeItem}>
+                  <MarkerIcon type='pass'/>
+                  <span className={styles.routeHint}>经过位置：上海第一人民医院 上海第二人民医院</span>
+                </div>
+                <div className={styles.routeItem}>
+                  <MarkerIcon type='geo_red'/>
+                  <span className={styles.routeHint}>当前位置：上海市徐汇区龙漕路路</span>
+                </div>
+                <div className={styles.routeItem}>
+                  <MarkerIcon type='end'/>
+                  <span className={styles.routeHint}>到达位置：上海市现金医院</span>
+                </div>
               </div>
 
               <div className={classnames(styles.panelCommon, styles.toolItem)}>
@@ -209,9 +246,12 @@ export default class Home extends Component {
               </div>
             </div>
 
-            <div className={styles.bottomTool}>
+            <div className={styles.bottomTool}
+                 style={{display: toolyhide ? 'none' : ''}}
+                 onClick={() => this.toggleToolPanel('y-hide')}
+            >
               <Icon name='arrow-up-ob' style={{marginRight: 5}}/>
-              <span>隐藏</span>
+              <span className={styles.routeHint}>隐藏</span>
             </div>
 
           </div>

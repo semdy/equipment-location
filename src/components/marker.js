@@ -11,7 +11,7 @@ import BMap from 'BMap';
 
 const defaultIconUrl = 'http://webmap1.map.bdstatic.com/wolfman/static/common/images/markers_new2x_fbb9e99.png';
 
-var icons = {
+export const icons = {
   'simple_red': new BMap.Icon(defaultIconUrl, new BMap.Size(42 / 2, 66 / 2), {
     imageOffset: new BMap.Size(-454 / 2, -378 / 2),
     anchor: new BMap.Size(42 / 2 / 2, 66 / 2),
@@ -41,7 +41,22 @@ var icons = {
     imageOffset: new BMap.Size(-450 / 2, -278 / 2),
     anchor: new BMap.Size(50 / 2 / 2, 80 / 2),
     imageSize: new BMap.Size(600 / 2, 600 / 2)
-  })
+  }),
+  'pass': new BMap.Icon(defaultIconUrl, new BMap.Size(50 / 2, 80 / 2), {
+    imageOffset: new BMap.Size(-538 / 2, -420 / 2),
+    anchor: new BMap.Size(50 / 2 / 2, 80 / 2),
+    imageSize: new BMap.Size(600 / 2, 600 / 2)
+  }),
+  'geo_blue': new BMap.Icon(defaultIconUrl, new BMap.Size(56 / 2, 80 / 2), {
+    imageOffset: new BMap.Size(-496 / 2, -932 / 2),
+    anchor: new BMap.Size(50 / 2 / 2, 80 / 2),
+    imageSize: new BMap.Size(600, 600)
+  }),
+  'geo_red': new BMap.Icon(defaultIconUrl, new BMap.Size(40 / 2, 40 / 2), {
+    imageOffset: new BMap.Size(-602 / 2, -930 / 2),
+    anchor: new BMap.Size(50 / 2 / 2, 80 / 2),
+    imageSize: new BMap.Size(600, 600)
+  }),
 };
 
 for (let i = 1; i <= 10; i++) {

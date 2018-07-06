@@ -1,5 +1,7 @@
 import dva from 'dva';
+import './common.less';
 import './index.less';
+import './components/animate/animate.less';
 
 import createLoading from 'dva-loading';
 

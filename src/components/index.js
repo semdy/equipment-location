@@ -8,6 +8,7 @@ export {default as Marker} from './marker';
 export {default as InfoWindow} from './infowindow';
 export {default as InfoBox} from './infobox';
 export {default as MarkerGroup} from './marker-group';
+export {default as MarkerIcon} from './markerIcons';
 export {default as Merge} from '../utils/merge';
 
 /**
