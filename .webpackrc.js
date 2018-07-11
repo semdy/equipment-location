@@ -6,24 +6,50 @@ export default {
   ],
   env: {
     development: {
-      extraBabelPlugins: ['dva-hmr'],
+      extraBabelPlugins: ['dva-hmr']
     },
+    production: {
+      commons: [
+        {
+          name: 'vendor',
+          minChunks: function (module) {
+            if (module.resource && (/^.*\.(css|scss)$/).test(module.resource)) {
+              return false;
+            }
+            return module.context && module.context.includes("node_modules");
+          }
+        },
+        {
+          async: 'common-chunk',
+          minChunks: (module, count) => (
+            count >= 2
+          )
+        },
+        {
+          name: 'manifest',
+          minChunks: Infinity
+        }
+      ],
+      html: {
+        inject: true,
+        minify: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeRedundantAttributes: true,
+          useShortDoctype: true,
+          removeEmptyAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          keepClosingSlash: true,
+          minifyJS: true,
+          minifyCSS: true,
+          minifyURLs: true,
+        },
+      }
+    }
   },
   alias: {
     '@components': path.resolve(__dirname, 'src/components/')
   },
-  commons: [
-    {
-      async: '__common',
-      children: true,
-      minChunks(module, count) {
-        if(module.resource && (/^.*\.(css|scss)$/).test(module.resource)) {
-          return false;
-        }
-        return module.context && module.context.includes("node_modules");
-      },
-    },
-  ],
   externals:{
     'BMap':'BMap'
   },

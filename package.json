@@ -3,6 +3,7 @@
   "scripts": {
     "start": "roadhog server",
     "build": "roadhog build",
+    "serve:dist": "pushstate-server dist",
     "lint": "eslint --ext .js src test",
     "precommit": "npm run lint"
   },
@@ -31,6 +32,8 @@
     "husky": "^0.12.0",
     "redbox-react": "^1.4.3",
     "roadhog": "^2.0.0",
-    "svg-sprite-loader": "^3.8.0"
+    "svg-sprite-loader": "^3.8.0",
+    "pushstate-server": "^3.0.1",
+    "sw-precache-webpack-plugin": "^0.11.5"
   }
 }

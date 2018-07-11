@@ -4,6 +4,7 @@ import './index.less';
 import './components/animate/animate.less';
 
 import createLoading from 'dva-loading';
+import registerServiceWorker from './registerServiceWorker';
 
 // requires and returns all modules that match
 const requireAll = requireContext => requireContext.keys().map(requireContext);
@@ -25,7 +26,9 @@ app.use(createLoading());
 app.model(require('./models/home').default);
 
 // 4. Router
-app.router(require('./router').default);
+app.router(require('./routes/router').default);
 
 // 5. Start
 app.start('#root');
+
+registerServiceWorker();
