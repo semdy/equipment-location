@@ -6,7 +6,11 @@ export default {
   ],
   env: {
     development: {
-      extraBabelPlugins: ['dva-hmr']
+      extraBabelPlugins: ['dva-hmr'],
+      html: {
+        template: './public/index.html',
+        inject: true
+      }
     },
     production: {
       commons: [
@@ -31,6 +35,7 @@ export default {
         }
       ],
       html: {
+        template: './public/index.html',
         inject: true,
         minify: {
           removeComments: true,
@@ -43,8 +48,12 @@ export default {
           minifyJS: true,
           minifyCSS: true,
           minifyURLs: true,
-        },
-      }
+        }
+      },
+      manifest: {
+        fileName: 'asset-manifest.json'
+      },
+      serviceworker: true
     }
   },
   alias: {
@@ -56,5 +65,5 @@ export default {
   ignoreMomentLocale: true,
   disableDynamicImport: false,
   publicPath: '/',
-  hash: true,
+  hash: true
 };
