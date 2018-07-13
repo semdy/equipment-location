@@ -4,7 +4,7 @@ module.exports = (webpackConfig, env) => {
   const iconPath = path.resolve(__dirname, 'src/assets/icons');
 
   webpackConfig.module.rules.forEach(item => {
-    if(String(item.test) === '/\\.html$/'){
+    if (String(item.test) === '/\\.html$/') {
       item.loader = require.resolve('html-loader')
     }
     if (String(item.loader).indexOf('url-loader') > -1) {
@@ -12,14 +12,12 @@ module.exports = (webpackConfig, env) => {
     }
   });
 
-  webpackConfig.module.rules.push(
-    {
-      test: /\.svg$/i,
-      loader: 'svg-sprite-loader',
-      include: iconPath,
-      exclude: /node_modules/
-    }
-  );
+  webpackConfig.module.rules.push({
+    test: /\.svg$/i,
+    loader: 'svg-sprite-loader',
+    include: iconPath,
+    exclude: /node_modules/
+  });
 
   return webpackConfig;
 };
