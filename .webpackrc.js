@@ -24,7 +24,8 @@ export default {
           }
         },
         {
-          async: 'common-chunk',
+          async: 'async-chunk',
+          children: true,
           minChunks: (module, count) => (
             count >= 2
           )
