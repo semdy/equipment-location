@@ -12,44 +12,47 @@ import {
   PercentageCircle
 } from '../../components';
 import classnames from 'classnames';
-import {Input, Select, Popover} from 'antd';
+import {Input, Popover} from 'antd';
 import styles from './home.less';
 
-const Option = Select.Option;
 const Search = Input.Search;
-
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
 
 @connect(({home, loading}) => ({
     home,
     loading: loading.global,
-  }),
-  dispatch => ({
-    addTodo: () => dispatch({
-      type: 'home/fetch',
-    }),
   })
 )
 export default class Home extends Component {
 
   state = {
-    markers: [
-      {
-        position: {lng: 119.0874, lat: 36.665582},
-        icon: "simple_red"
-      }
-    ],
+    curMark: null,
+    address: null,
+    equiptId: null,
     infobox: {
-      position: {lng: 116.402544, lat: 39.928216},
+      position: {},
       isOpen: false
     },
     toolxhide: false,
-    toolyhide: false
+    toolyhide: false,
   };
 
-  handleMarkerOver(position) {
+  handleMarkerClick(marker) {
+    if (marker.type === 'province') {
+      this.props.dispatch({
+        type: 'home/fetchCities',
+        payload: {
+          map: this.refs.map.map,
+          name: marker.name
+        }
+      })
+    }
+
+    this.setState({
+      curMark: marker.type === 'city' ? marker : null
+    })
+  }
+
+  handleMarkerOver({ position }) {
     this.setState({
       infobox: {
         position: position,
@@ -64,6 +67,31 @@ export default class Home extends Component {
         isOpen: false
       }
     });
+  }
+
+  setAddress(address) {
+    this.setState({
+      address
+    })
+  }
+
+  setEquiptId(equiptId) {
+    this.setState({
+      equiptId
+    })
+  }
+
+  handleSearch() {
+    if (this.state.curMark) {
+      this.props.dispatch({
+        type: 'home/search',
+        payload: {
+          city: this.state.curMark.name,
+          address: this.state.address,
+          equiptId: this.state.equiptId
+        }
+      })
+    }
   }
 
   toggleToolPanel(type) {
@@ -82,12 +110,16 @@ export default class Home extends Component {
   }
 
   componentDidMount() {
-    this.props.addTodo();
+    this.props.dispatch({
+      type: 'home/fetchProvinces',
+      payload: this.refs.map.map
+    })
   }
 
   render() {
-    const {statusList} = this.props.home;
-    const {markers, infobox, toolxhide, toolyhide} = this.state;
+    const {statusList, markers, mapZoom} = this.props.home;
+    const {infobox, toolxhide, toolyhide} = this.state;
+
     return (
       <div className={styles.container}>
         <header className={styles.header}>
@@ -97,16 +129,23 @@ export default class Home extends Component {
               <h1>硬件定位系统</h1>
             </div>
             <div className={classnames('fn-right', styles.headerRight)}>
-              <Select defaultValue="0"
+             {/* <Select defaultValue="0"
                       style={{width: 120, marginRight: 8}}
                       onChange={handleChange}
               >
                 <Option value="0">目的地</Option>
                 <Option value="1">设备id</Option>
-              </Select>
+              </Select>*/}
               <Search
-                placeholder="请输入查询关键字"
-                onSearch={value => console.log(value)}
+                placeholder="输入目的地查询"
+                onChange={e => this.setAddress(e.target.value)}
+                onSearch={value => this.handleSearch()}
+                style={{width: 200, marginRight: 15}}
+              />
+              <Search
+                placeholder="输入设备id查询"
+                onChange={e => this.setEquiptId(e.target.value)}
+                onSearch={value => this.handleSearch()}
                 style={{width: 200}}
               />
             </div>
@@ -142,10 +181,9 @@ export default class Home extends Component {
           </div>
           <div className={styles.mapContainer}>
             <Map
-              center={{
-                lng: 105.403119,
-                lat: 38.028658
-              }}
+              center={markers.length > 0 ? markers[0].position : undefined}
+              zoom={ mapZoom }
+              ref='map'
             >
               <MarkerGroup>
                 {
@@ -153,12 +191,27 @@ export default class Home extends Component {
                     <Marker
                       key={i}
                       position={marker.position}
-                      icon={marker.icon}
+                      icon='simple_red'
+                      offset={
+                        new BMap.Size(-40, -40)
+                      }
                       events={{
-                        mouseover: this.handleMarkerOver.bind(this, marker.position),
-                        mouseout: this.handleMarkerMouseout.bind(this)
+                        click: () => this.handleMarkerClick(marker),
+                        mouseover: () => this.handleMarkerOver(marker),
+                        mouseout: () => this.handleMarkerMouseout()
                       }}
                     >
+                      {
+                        marker.style &&
+                        <div className={styles.circleMarker}>
+                          <span className={styles.markName}>
+                            {marker.name}
+                          </span>
+                          <span className={styles.markCount}>
+                            {marker.count}
+                          </span>
+                        </div>
+                      }
                     </Marker>
                   ))
                 }
@@ -167,7 +220,7 @@ export default class Home extends Component {
                 position={infobox.position}
                 isOpen={infobox.isOpen}
                 offset={
-                  new BMap.Size(-88, 35)
+                  new BMap.Size(-88, 40)
                 }
               >
                 <div className="ant-popover ant-popover-placement-top map-popover" style={{position: 'relative'}}>

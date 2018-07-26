@@ -90,7 +90,6 @@ RichMarker.prototype.initialize = function (map) {
   Object.assign(div.style, {
     position: "absolute",
     zIndex: BMap.Overlay.getZIndex(me._position.lat),
-    background: "#FFF",
     cursor: "pointer"
   });
   map.getPanes().labelPane.appendChild(div);

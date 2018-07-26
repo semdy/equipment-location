@@ -32,3 +32,5 @@ app.router(require('./routes/router').default);
 app.start('#root');
 
 registerServiceWorker();
+
+export default app._store;  // eslint-disable-line

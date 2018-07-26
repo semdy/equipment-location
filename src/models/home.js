@@ -1,12 +1,12 @@
-import { queryUsers } from '../services/home';
-
-const delay = (time) => new Promise(resolve => setTimeout(resolve, time));
+import { queryProvinces, queryCities, queryList } from '../services/home';
 
 export default {
 
   namespace: 'home',
 
   state: {
+    mapZoom: 8,
+    markers: [],
     statusList: [{
       percent: 0.8,
       color: "#4472c4",
@@ -33,19 +33,43 @@ export default {
   },
 
   effects: {
-    *fetch(_, { call, put }) {  // eslint-disable-line
-      const response = yield call(delay, 1000);
+    *fetchProvinces({ payload }, { call, put }) {  // eslint-disable-line
+      const response = yield call(queryProvinces, payload);
       yield put({
-        type: 'save',
+        type: 'saveProvince',
+        payload: response,
+      });
+    },
+    *fetchCities({ payload }, { call, put }) {  // eslint-disable-line
+      const response = yield call(queryCities, payload.map, payload.name);
+      yield put({
+        type: 'saveCity',
+        payload: response,
+      });
+    },
+    *search({ payload }, { call, put }) {  // eslint-disable-line
+      const response = yield call(queryList, payload.city, payload.address, payload.equiptId);
+      yield put({
+        type: 'saveSearch',
         payload: response,
       });
     }
   },
 
   reducers: {
-    save(state, action) {
-      return {...state, ...action.payload};
-    }
+    saveProvince(state, action) {
+      state.markers = action.payload
+      return state
+    },
+    saveCity(state, action) {
+      state.markers = action.payload
+      state.mapZoom = 12
+      return state
+    },
+    saveSearch(state, action) {
+      state.markers = action.payload
+      return state
+    },
   },
 
 };

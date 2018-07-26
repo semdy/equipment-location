@@ -67,7 +67,7 @@ export default class MarkerGroup extends Component {
 
     const {children, map} = this.props;
 
-    if (!children || !map) return;
+    if (!children || !map) return null;
 
     return React.Children.map(children, child => {
 

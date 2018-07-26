@@ -60,7 +60,7 @@ export default {
   alias: {
     '@components': path.resolve(__dirname, 'src/components/')
   },
-  externals:{
+  externals: {
     'BMap':'BMap'
   },
   ignoreMomentLocale: true,
