@@ -15,38 +15,38 @@
  * var mgr = new MarkerManager(map,{borderPadding: padding,maxZoom: 18});
  */
 
-import BMap from 'BMap';
+import BMap from 'BMap'
 
 var MarkerManager = function (map, opts) {
-  this._opts = opts || {};
-  this._map = map;
-  this._zoom = map.getZoom();
+  this._opts = opts || {}
+  this._map = map
+  this._zoom = map.getZoom()
   //用于存放添加的marker数组
-  this._numMarkers = [];
+  this._numMarkers = []
 
   if (typeof opts.maxZoom === 'number') {
-    this._opts.maxZoom = this._opts.maxZoom;
+    this._opts.maxZoom = this._opts.maxZoom
   } else {
-    this._opts.maxZoom = 19;
+    this._opts.maxZoom = 19
   }
   if (typeof opts.borderPadding === 'number') {
-    this._opts.borderPadding = opts.borderPadding;
+    this._opts.borderPadding = opts.borderPadding
   } else {
-    this._opts.borderPadding = 0;
+    this._opts.borderPadding = 0
   }
 
-  var me = this;
+  var me = this
   //绑定zoomend事件
   this._map.addEventListener("zoomend", function () {
     //me._visible && me._showMarkers();
-    me._showMarkers();
-  });
+    me._showMarkers()
+  })
   //绑定dragend事件
   this._map.addEventListener("dragend", function () {
     //me._visible && me._showMarkers();
-    me._showMarkers();
-  });
-};
+    me._showMarkers()
+  })
+}
 /**
  * 添加单个marker
  * @param {Marker} marker 要添加的marker
@@ -58,13 +58,13 @@ var MarkerManager = function (map, opts) {
  * mgr.addMarker(marker,4,15);
  */
 MarkerManager.prototype.addMarker = function (marker, minZoom, maxZoom) {
-  minZoom = minZoom && minZoom > 0 ? minZoom : 1;
-  maxZoom = maxZoom && maxZoom <= 19 ? maxZoom : this._opts.maxZoom;
-  marker.minZoom = minZoom;
-  marker.maxZoom = maxZoom;
-  marker.bAdded = false;
-  this._numMarkers.push(marker);
-};
+  minZoom = minZoom && minZoom > 0 ? minZoom : 1
+  maxZoom = maxZoom && maxZoom <= 19 ? maxZoom : this._opts.maxZoom
+  marker.minZoom = minZoom
+  marker.maxZoom = maxZoom
+  marker.bAdded = false
+  this._numMarkers.push(marker)
+}
 /**
  * 批量添加marker
  * @param {Array} markers 要添加的marker数组
@@ -76,11 +76,11 @@ MarkerManager.prototype.addMarker = function (marker, minZoom, maxZoom) {
  * mgr.addMarker(markers,4,15);
  */
 MarkerManager.prototype.addMarkers = function (markers, minZoom, maxZoom) {
-  var len = markers.length;
+  var len = markers.length
   for (var i = len; i--;) {
-    this.addMarker(markers[i], minZoom, maxZoom);
+    this.addMarker(markers[i], minZoom, maxZoom)
   }
-};
+}
 /**
  * 从manager跟地图中，移除marker（如果它现在可见）
  * @param {Marker} marker 要删除的marker
@@ -92,11 +92,11 @@ MarkerManager.prototype.addMarkers = function (markers, minZoom, maxZoom) {
 MarkerManager.prototype.removeMarker = function (marker) {
   if (marker instanceof BMap.Overlay) {
     //移除地图上的marker
-    this._map.removeOverlay(marker);
+    this._map.removeOverlay(marker)
     //移除markerManager中的marker
-    this._removeMarkerFromArray(marker);
+    this._removeMarkerFromArray(marker)
   }
-};
+}
 /**
  * 返回此zoom下可见marker的数量
  * @param {Number} zoom 地图缩放级别
@@ -108,13 +108,13 @@ MarkerManager.prototype.removeMarker = function (marker) {
 MarkerManager.prototype.getMarkerCount = function (zoom) {
   var len = this._numMarkers.length,
     t = this._numMarkers,
-    count = 0;
+    count = 0
   for (var i = len; i--;) {
-    count = t[i].bInBounds ? ((t[i].minZoom <= zoom && t[i].maxZoom >= zoom) ? ++count : count) : count;
+    count = t[i].bInBounds ? ((t[i].minZoom <= zoom && t[i].maxZoom >= zoom) ? ++count : count) : count
   }
   //如果隐藏掉所有marker则marker数量为0
-  return this._visible ? count : 0;
-};
+  return this._visible ? count : 0
+}
 /**
  * 显示marker,此方法只是控制css样式中的display的值。
  * @return none
@@ -123,13 +123,13 @@ MarkerManager.prototype.getMarkerCount = function (zoom) {
  * mgr.show();
  */
 MarkerManager.prototype.show = function () {
-  var num = this._numMarkers.length;
+  var num = this._numMarkers.length
   for (var i = num; i--;) {
     //将视野中的marker显示
-    this._numMarkers[i].bInBounds && this._numMarkers[i].show();
+    this._numMarkers[i].bInBounds && this._numMarkers[i].show()
   }
-  this._visible = true;
-};
+  this._visible = true
+}
 /**
  * 隐藏marker，此方法只是控制css样式中的display的值。
  * @return none
@@ -138,12 +138,12 @@ MarkerManager.prototype.show = function () {
  * mgr.hide();
  */
 MarkerManager.prototype.hide = function () {
-  var num = this._numMarkers.length;
+  var num = this._numMarkers.length
   for (var i = num; i--;) {
-    this._numMarkers[i].bInBounds && this._numMarkers[i].hide();
+    this._numMarkers[i].bInBounds && this._numMarkers[i].hide()
   }
-  this._visible = false;
-};
+  this._visible = false
+}
 /**
  * 显示或者隐藏marker
  * @param {Marker} marker 要删除的marker
@@ -153,8 +153,8 @@ MarkerManager.prototype.hide = function () {
  * mgr.toggle(marker,4,15);
  */
 MarkerManager.prototype.toggle = function () {
-  this._visible ? this.hide() : this.show();
-};
+  this._visible ? this.hide() : this.show()
+}
 /**
  * 显示地图上的marker
  * @return none
@@ -163,9 +163,9 @@ MarkerManager.prototype.toggle = function () {
  * mgr.showMarkers();
  */
 MarkerManager.prototype.showMarkers = function () {
-  this._visible = true;
-  this._showMarkers();
-};
+  this._visible = true
+  this._showMarkers()
+}
 /**
  * 移除在manager中的所有marker,并清空。
  * @param none
@@ -175,39 +175,42 @@ MarkerManager.prototype.showMarkers = function () {
  * mgr.clearMarkers();
  */
 MarkerManager.prototype.clearMarkers = function () {
-  var len = this._numMarkers.length;
+  var len = this._numMarkers.length
   for (var i = len; i--;) {
-    this._numMarkers[i].bInBounds && this._map.removeOverlay(this._numMarkers[i]);
+    this._numMarkers[i].bInBounds && this._map.removeOverlay(this._numMarkers[i])
   }
-  this._numMarkers.length = 0;
-};
+  this._numMarkers.length = 0
+}
 
 MarkerManager.prototype._showMarkers = function () {
-  var num = this._numMarkers.length,
-    curZoom = this._map.getZoom(),
-    t = this._numMarkers,
-    curBounds = this._getRealBounds();
-  for (var i = num; i--;) {
+  var t = this._numMarkers;
+
+  if (t.length === 0 || !this._map) return
+
+  var curZoom = this._map.getZoom();
+  var curBounds = this._getRealBounds();
+
+  for (var i = t.length; i--;) {
     //在可视区域内 && 当前zoom符合marker的显示条件
     if (curBounds.containsPoint(t[i].getPosition()) && curZoom >= t[i].minZoom && curZoom <= t[i].maxZoom) {
-      t[i].bInBounds = true;
+      t[i].bInBounds = true
       //没有被添加到地图
       if (!t[i].bAdded) {
-        this._map.addOverlay(t[i]);
-        !this._visible && t[i].hide();
-        t[i].bAdded = true;
+        this._map.addOverlay(t[i])
+        !this._visible && t[i].hide()
+        t[i].bAdded = true
       } else {
         //显示marker
-        this._visible && t[i].show();
+        this._visible && t[i].show()
       }
     } else if (t[i].bAdded) {
       // 当前地图zoom小于marker的最小zoom或者大于最大zoom,并且已经被添加到地图上。就将此marker隐藏
-      t[i].bInBounds = false;
+      t[i].bInBounds = false
       //this._map.removeOverlay(t[i]);
-      t[i].hide();
+      t[i].hide()
     }
   }
-};
+}
 /**
  * 得到实际的bound范围
  * @return none
@@ -225,9 +228,9 @@ MarkerManager.prototype._getRealBounds = function () {
       y: northEast.y - this._opts.borderPadding
     },
     extendSwPoint = this._map.pixelToPoint(extendSW),
-    extendNePoint = this._map.pixelToPoint(extendNE);
-  return new BMap.Bounds(extendSwPoint, extendNePoint);
-};
+    extendNePoint = this._map.pixelToPoint(extendNE)
+  return new BMap.Bounds(extendSwPoint, extendNePoint)
+}
 /**
  * 从数组中删除marker
  * @param {Marker} marker 要删除的marker
@@ -236,14 +239,14 @@ MarkerManager.prototype._getRealBounds = function () {
 MarkerManager.prototype._removeMarkerFromArray = function (marker) {
   var num = this._numMarkers.length,
     i = num,
-    shift = 0;
+    shift = 0
   for (i = num; i--;) {
     if (marker === this._numMarkers[i]) {
-      this._numMarkers.splice(i--, 1);
-      shift++;
+      this._numMarkers.splice(i--, 1)
+      shift++
     }
   }
-  return shift;
-};
+  return shift
+}
 
-export default MarkerManager;
+export default MarkerManager

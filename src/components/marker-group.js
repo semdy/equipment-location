@@ -16,11 +16,14 @@ export default class MarkerGroup extends Component {
     this.state = {};
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.initialize();
+    if (this.props.isOpen) {
+      this.markerManager.showMarkers();
+    }
   }
 
-  componentDidMount() {
+  componentDidUpdate() {
     if (this.props.isOpen) {
       this.markerManager.showMarkers();
     }

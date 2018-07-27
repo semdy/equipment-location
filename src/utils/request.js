@@ -73,10 +73,11 @@ export default function http(url, options) {
     }
   } else {
     if ( url.indexOf('?') > -1 ) {
-      url += `&${parseParams(options.body)}`
+      url += `&${parseParams(newOptions.body)}`
     } else {
-      url += `?${parseParams(options.body)}`
+      url += `?${parseParams(newOptions.body)}`
     }
+    delete newOptions.body
   }
 
   return fetch(SERVER_URL + url, newOptions)

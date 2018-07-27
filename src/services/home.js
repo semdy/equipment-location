@@ -1,36 +1,46 @@
 import fetch from '../utils/request'
 import {geocode} from '../utils/geocoder'
 
-export async function queryProvinces(map) {
+export async function queryProvinces() {
   let data = await fetch.get('/count/province')
 
   return await Promise.all(data.map(async item => {
-    let position = await geocode(map, item.province)
+    const {lat, lng} = await geocode(item.province)
     return {
       ...item,
-      position,
+      position: {lat, lng},
       name: item.province,
-      style: 'circle',
       type: 'province'
     }
   }))
 }
 
-export async function queryCities(map, province) {
+export async function queryCities(province) {
   let data = await fetch.get('/count/city', { province })
 
   return await Promise.all(data.map(async item => {
-    let position = await geocode(map, item.city)
+    const {lat, lng} = await geocode(item.city)
     return {
       ...item,
-      position,
+      position: {lat, lng},
       name: item.city,
-      style: 'circle',
       type: 'city'
     }
   }))
 }
 
-export function queryList(city, address, RFID) {
-  fetch.get('/find/toolBox/list', { city, address, RFID })
+export async function queryList(city, address, RFID) {
+  let data = await fetch.get('/find/toolBox/list', { city, address, RFID })
+  return data.map(item => {
+    const {latitude, longitude} = item.position
+    return {
+      ...item,
+      type: 'toolbox',
+      position: { lat: latitude, lng: longitude }
+    }
+  })
+}
+
+export function queryDetail(RFID) {
+  return fetch.get('/find/toolBox/one', { RFID })
 }

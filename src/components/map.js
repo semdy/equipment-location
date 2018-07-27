@@ -26,6 +26,31 @@ export default class Map extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    const { zoom, minZoom, maxZoom, style, center, enableScrollWheelZoom } = this.props;
+    'minZoom',
+      'maxZoom',
+      'mapType',
+      'enableMapClick'
+    if (
+      zoom !== nextProps.zoom
+      || minZoom !== nextProps.minZoom
+      || maxZoom !== nextProps.maxZoom
+      || style !== nextProps.style
+      || enableScrollWheelZoom !== nextProps.enableScrollWheelZoom
+    ) {
+      return true;
+    }
+
+    for(let i in nextProps.center) {
+      if (nextProps.center[i] !== center[i]) {
+        return true;
+      }
+    }
+
+    return false
+  }
+
   /**
    * 获取可以给地图绑定的事件名
    */
