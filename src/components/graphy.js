@@ -29,20 +29,22 @@ export default class Graphy extends Component {
     }
 
     initialize() {
-        var map = this.props.map;
+        const { map, showPath } = this.props;
         if (!map) {
             return;
         }
 
         this.destroy();
 
+        if (!showPath) return;
+
         this.overlay = this.getOverlay();
         this.bindEvent(this.overlay, this.events);
         map.addOverlay(this.overlay);
 
 
-        var path = this.overlay.getPath();
-        if (path && path.length > 0 && this.props.autoViewport === true) {
+        let path = this.overlay.getPath();
+        if (path && path.length > 1 && this.props.autoViewport === true) {
             map.setViewport(path, this.props.viewportOptions);
         }
 

@@ -14,10 +14,10 @@ export default class App extends Graphy {
 
     getOverlay() {
 
-        var path = this.props.path;
+        let path = this.props.path;
 
         path = path.map((item) => {
-            return new BMap.Point(item.lng, item.lat);
+            return new BMap.Point(item.position.lng, item.position.lat);
         });
 
         return new BMap.Polyline(path, this.getOptions(this.options));

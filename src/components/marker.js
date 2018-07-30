@@ -177,6 +177,7 @@ export default class App extends Component {
 
   initialize() {
     let map = this.props.map;
+
     if (!map) {
       return;
     }

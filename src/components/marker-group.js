@@ -23,9 +23,11 @@ export default class MarkerGroup extends Component {
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     if (this.props.isOpen) {
-      this.markerManager.showMarkers();
+      setTimeout(() => {
+        this.markerManager.showMarkers();
+      });
     }
   }
 
@@ -53,7 +55,7 @@ export default class MarkerGroup extends Component {
   }
 
   initialize() {
-    const { map, borderPadding, maxZoom} = this.props;
+    const { map, borderPadding, maxZoom } = this.props;
     if (!map) {
       return;
     }

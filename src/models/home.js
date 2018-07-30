@@ -7,26 +7,7 @@ export default {
   state: {
     mapZoom: 8,
     markers: [],
-    detail: {
-      statusList: [{
-        percent: 0.8,
-        color: "#4472c4",
-        num: 43,
-        name: '可调配'
-      },
-      {
-        percent: 0.6,
-        color: "#ff0000",
-        num: 85,
-        name: '异常'
-      },
-      {
-        percent: 0.4,
-        color: "#06c",
-        num: 45,
-        name: '占用'
-      }]
-    }
+    detail: {}
   },
 
   subscriptions: {
@@ -77,12 +58,16 @@ export default {
     },
     saveSearch(state, action) {
       state.markers = action.payload
+      state.detail = {}
+      state.mapZoom = 12
       return state
     },
     saveDetail(state, action) {
-      Object.assign(state.detail, action.payload)
+      const {flows, device, toolBox, statusList} = action.payload
+      state.markers = flows
+      Object.assign(state.detail, {toolBox, device, statusList})
       return state
-    },
-  },
+    }
+  }
 
 };

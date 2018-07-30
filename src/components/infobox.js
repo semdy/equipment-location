@@ -88,7 +88,7 @@ export default class Infobox extends Component {
   }
 
   initialize() {
-    const { map, children, isOpen } = this.props;
+    const { map, children, isOpen, position, text } = this.props;
     if (!map) {
       return;
     }
@@ -100,13 +100,13 @@ export default class Infobox extends Component {
       render(<div>{children}</div>, this.contentDom);
       this.infoWindow = new CustomInfoBox(map, this.contentDom, this.getOptions(this.options));
       if (isOpen) {
-        this.infoWindow.open(new BMap.Point(this.props.position.lng, this.props.position.lat));
+        this.infoWindow.open(new BMap.Point(position.lng, position.lat));
       }
     } else {
-      this.infoWindow = new BMap.InfoWindow(this.props.text, this.getOptions(this.options));
+      this.infoWindow = new BMap.InfoWindow(text, this.getOptions(this.options));
       this.bindEvent(this.infoWindow, this.events);
       if (isOpen) {
-        map.openInfoWindow(this.infoWindow, new BMap.Point(this.props.position.lng, this.props.position.lat));
+        map.openInfoWindow(this.infoWindow, new BMap.Point(position.lng, position.lat));
       }
     }
   }

@@ -8,6 +8,7 @@ import {
   Marker,
   InfoBox,
   MarkerGroup,
+  Polyline,
   MarkerIcon,
   PercentageCircle
 } from '../../components'
@@ -29,6 +30,7 @@ export default class Home extends Component {
   address = ''
   equiptId = ''
   isCircleMarker = true
+  showPath = false
 
   state = {
     infobox: {
@@ -42,6 +44,7 @@ export default class Home extends Component {
   }
 
   handleMarkerClick(marker) {
+    this.showPath = false
     if (marker.type === 'province') {
       this.props.dispatch({
         type: 'home/fetchCities',
@@ -55,6 +58,7 @@ export default class Home extends Component {
       this.handleSearch()
     }
     else if (marker.type === 'toolbox') {
+      this.showPath = true
       this.props.dispatch({
         type: 'home/fetchDetail',
         payload: marker.RFID
@@ -103,6 +107,7 @@ export default class Home extends Component {
       }
     })
     this.isCircleMarker = false
+    this.showPath = false
   }
 
   toggleToolPanel(type) {
@@ -127,8 +132,8 @@ export default class Home extends Component {
   }
 
   renderToolBox() {
-    const { detail } = this.props.home
-    const { toolBox, task, device } = detail
+    const { detail, markers } = this.props.home
+    const { toolBox, device } = detail
     const { toolxhide, toolyhide } = this.state
 
     return (
@@ -161,37 +166,17 @@ export default class Home extends Component {
 
           <div className={classnames(styles.panelCommon, styles.toolItem)}>
             {
-              task.transflow.map((item, i) => {
-                let icon = ''
-                let prefix = ''
-
-                if (i === 0) {
-                  icon = 'start'
-                  prefix = '起始'
-                }
-                else if (i === task.transflow.length - 1) {
-                  icon = 'geo_red'
-                  prefix = '当前'
-                }
-                else {
-                  icon = 'pass'
-                  prefix = '经过'
-                }
-
+              markers.map((item, i) => {
                 return (
                   <div className={styles.routeItem} key={i}>
-                    <MarkerIcon type={icon}/>
+                    <MarkerIcon type={item.icon}/>
                     <span className={styles.routeHint}>
-                          {prefix}位置：{item.addrees}
+                          {item.prefix}位置：{item.address}
                         </span>
                   </div>
                 )
               })
             }
-            <div className={styles.routeItem}>
-              <MarkerIcon type='end'/>
-              <span className={styles.routeHint}>到达位置：{task.endAddress}</span>
-            </div>
           </div>
 
           <div className={classnames(styles.panelCommon, styles.toolItem)}>
@@ -251,8 +236,8 @@ export default class Home extends Component {
   }
 
   renderMap() {
-    const { markers, mapZoom } = this.props.home
-    const { infobox } = this.state
+    let { markers, mapZoom } = this.props.home
+    let { infobox } = this.state
 
     return (
       <div className={styles.mapContainer}>
@@ -261,46 +246,42 @@ export default class Home extends Component {
           zoom={mapZoom}
         >
           {
-            markers.length &&
-            <MarkerGroup>
-              {
-                markers.map((marker, i) => (
-                  <Marker
-                    key={i}
-                    position={marker.position}
-                    icon='simple_red'
-                    offset={
-                      this.isCircleMarker
-                        ? new BMap.Size(-40, -40)
-                        : new BMap.Size(-10.5, -33)
-                    }
-                    events={{
-                      click: () => this.handleMarkerClick(marker),
-                      mouseover: () => this.handleMarkerOver(marker),
-                      mouseout: () => this.handleMarkerMouseout()
-                    }}
-                  >
-                    {
-                      this.isCircleMarker &&
-                      <div className={styles.circleMarker}>
-                            <span className={styles.markName}>
-                              {marker.name}
-                            </span>
-                        <span className={styles.markCount}>
-                              {marker.count}
-                            </span>
-                      </div>
-                    }
-                  </Marker>
-                ))
-              }
-            </MarkerGroup>
+            markers.map((marker, i) => (
+              <Marker
+                key={i}
+                position={marker.position}
+                icon={marker.icon || 'simple_red'}
+                offset={
+                  this.isCircleMarker
+                    ? new BMap.Size(-40, -40)
+                    : new BMap.Size(0, 0)
+                }
+                events={{
+                  click: () => this.handleMarkerClick(marker),
+                  mouseover: () => this.handleMarkerOver(marker),
+                  mouseout: () => this.handleMarkerMouseout()
+                }}
+              >
+                {
+                  this.isCircleMarker &&
+                  <div className={styles.circleMarker}>
+                        <span className={styles.markName}>
+                          {marker.name}
+                        </span>
+                    <span className={styles.markCount}>
+                          {marker.count}
+                        </span>
+                  </div>
+                }
+              </Marker>
+            ))
           }
+          <Polyline path={markers} showPath={this.showPath} />
           <InfoBox
             position={infobox.position}
             isOpen={infobox.isOpen}
             offset={
-              new BMap.Size(-98.5, 70)
+              new BMap.Size(-88, 40)
             }
           >
             <div className="ant-popover ant-popover-placement-top map-popover" style={{position: 'relative'}}>
@@ -354,7 +335,7 @@ export default class Home extends Component {
         </header>
 
         <div className={styles.main}>
-          { this.renderStats() }
+          { detail.statusList && this.renderStats() }
           { this.renderMap() }
           { detail.toolBox && this.renderToolBox() }
         </div>

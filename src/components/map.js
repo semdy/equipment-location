@@ -28,10 +28,7 @@ export default class Map extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const { zoom, minZoom, maxZoom, style, center, enableScrollWheelZoom } = this.props;
-    'minZoom',
-      'maxZoom',
-      'mapType',
-      'enableMapClick'
+
     if (
       zoom !== nextProps.zoom
       || minZoom !== nextProps.minZoom

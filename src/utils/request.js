@@ -71,7 +71,8 @@ export default function http(url, options) {
         ...newOptions.headers,
       };
     }
-  } else {
+  }
+  else if (newOptions.method === 'GET' && newOptions.body) {
     if ( url.indexOf('?') > -1 ) {
       url += `&${parseParams(newOptions.body)}`
     } else {
@@ -84,9 +85,9 @@ export default function http(url, options) {
     .then(checkStatus)
     .then((response) => {
       if (newOptions.method === 'DELETE' || response.status === 204) {
-        return response.text();
+        return response.text()
       }
-      return response.json();
+      return response.json()
     })
     .then(res => {
       if (res.status !== 'ok') {
@@ -97,7 +98,7 @@ export default function http(url, options) {
       }
       return res.data
     })
-    .catch(err => ({ err }));
+    .catch(err => ({ err }))
 }
 
 http.get = (url, body) => {
