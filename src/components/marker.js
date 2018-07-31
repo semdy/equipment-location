@@ -54,7 +54,7 @@ export const icons = {
   }),
   'geo_red': new BMap.Icon(defaultIconUrl, new BMap.Size(40 / 2, 40 / 2), {
     imageOffset: new BMap.Size(-602 / 2, -930 / 2),
-    anchor: new BMap.Size(50 / 2 / 2, 80 / 2),
+    anchor: new BMap.Size(44 / 2 / 2, 50 / 2 / 2),
     imageSize: new BMap.Size(600, 600)
   }),
 };

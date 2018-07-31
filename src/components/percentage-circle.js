@@ -1,13 +1,5 @@
 import {Component} from 'react';
 
-let reqAE = function (callback) {
-  return setTimeout(callback, 1000 / 60);
-};
-
-let cancelAE = function (id) {
-  return clearTimeout(id);
-};
-
 function CircEaseInOut(p) {
   return ((p*=2) < 1) ? -0.5 * (Math.sqrt(1 - p * p) - 1) : 0.5 * (Math.sqrt(1 - (p -= 2) * p) + 1);
 }
@@ -22,7 +14,7 @@ let Tween = function(target, toAttrs, duration, ease, onUpdate, callback){
   let originAttrs = Object.assign({}, target);
 
   function run(){
-    reqId = reqAE(run);
+    reqId = requestAnimationFrame(run);
     let percent = (Date.now() - startTime)/duration;
     if( percent >= 1 ) percent = 1;
 
@@ -33,7 +25,7 @@ let Tween = function(target, toAttrs, duration, ease, onUpdate, callback){
     onUpdate(percent);
 
     if( percent === 1 ){
-      cancelAE(reqId);
+      cancelAnimationFrame(reqId);
       callback && callback();
     }
   }
@@ -62,7 +54,12 @@ let Circle = function(canvasDom, options = {}){
     });
   }
 
-  this.render();
+  if (options.percent > 0) {
+    this.options.percent = 0;
+    Tween(this.options, {percent: options.percent}, 600, Linear, this.render.bind(this));
+  } else {
+    this.render();
+  }
 };
 
 Circle.prototype = {

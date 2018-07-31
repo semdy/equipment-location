@@ -15,6 +15,9 @@ export const isString = function (str) {
  * @return {String}        格式化过后的时间
  */
 export const formatDate = function (source, format) {
+  if (!(source instanceof Date)) {
+    source = new Date(source);
+  }
   const o = {
     'M+': source.getMonth() + 1, // 月份
     'd+': source.getDate(), // 日
@@ -33,4 +36,11 @@ export const formatDate = function (source, format) {
     }
   }
   return format
+}
+
+export const caclTotal = function (array, key) {
+  if (!Array.isArray(array) || array.length === 0) {
+    return 0
+  }
+  return array.map(_ => Number(key ? _[key] : _)).reduce((a, b) => a + b)
 }

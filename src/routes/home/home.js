@@ -14,7 +14,7 @@ import {
 } from '../../components'
 import classnames from 'classnames'
 import {Input, Popover} from 'antd'
-import { formatDate } from '../../utils/common'
+import {formatDate, caclTotal} from '../../utils/common'
 import styles from './home.less'
 
 const Search = Input.Search
@@ -26,10 +26,11 @@ const Search = Input.Search
 )
 export default class Home extends Component {
 
+  curProvince = ''
   curCity = ''
   address = ''
   equiptId = ''
-  isCircleMarker = true
+  customMarker = true
   showPath = false
 
   state = {
@@ -41,33 +42,39 @@ export default class Home extends Component {
     },
     toolxhide: false,
     toolyhide: false,
+    hideStats: false
   }
 
   handleMarkerClick(marker) {
-    this.showPath = false
     if (marker.type === 'province') {
+      this.curProvince = marker.name
       this.props.dispatch({
         type: 'home/fetchCities',
         payload: {
           city: marker.name
         }
       })
-      this.curCity = marker.name
     }
     else if (marker.type === 'city') {
+      this.curCity = marker.name
       this.handleSearch()
     }
     else if (marker.type === 'toolbox') {
       this.showPath = true
+      this.handleMarkerMouseout()
       this.props.dispatch({
         type: 'home/fetchDetail',
-        payload: marker.RFID
+        payload: {
+          RFID: marker.RFID,
+          province: this.curProvince,
+          city: this.curCity
+        }
       })
     }
   }
 
   handleMarkerOver(marker) {
-    if (!this.isCircleMarker) {
+    if (!this.customMarker) {
       this.setState({
         infobox: {
           position: marker.position,
@@ -80,7 +87,7 @@ export default class Home extends Component {
   }
 
   handleMarkerMouseout() {
-    if (!this.isCircleMarker) {
+    if (!this.customMarker) {
       this.setState({
         infobox: {
           isOpen: false
@@ -106,8 +113,13 @@ export default class Home extends Component {
         city: this.curCity
       }
     })
-    this.isCircleMarker = false
+    this.customMarker = false
     this.showPath = false
+    this.setState({
+      toolxhide: false,
+      toolyhide: false,
+      hideStats: false
+    })
   }
 
   toggleToolPanel(type) {
@@ -125,6 +137,12 @@ export default class Home extends Component {
     }
   }
 
+  toggleStatsPanel() {
+    this.setState({
+      hideStats: !this.state.hideStats
+    })
+  }
+
   componentDidMount() {
     this.props.dispatch({
       type: 'home/fetchProvinces'
@@ -132,9 +150,9 @@ export default class Home extends Component {
   }
 
   renderToolBox() {
-    const { detail, markers } = this.props.home
-    const { toolBox, device } = detail
-    const { toolxhide, toolyhide } = this.state
+    const {detail, markers} = this.props.home
+    const {task, toolBox, device} = detail
+    const {toolxhide, toolyhide} = this.state
 
     return (
       <div className={classnames(styles.toolWrap, {[styles.xhide]: toolxhide})}
@@ -158,8 +176,8 @@ export default class Home extends Component {
             工具箱号：{toolBox.RFID}
           </div>
           <div className={classnames(styles.panelCommon, styles.toolItem)}>
-            <p>最近定位时间：{formatDate(new Date(toolBox.updatedAt), 'yyyy/MM/dd HH:mm')}</p>
-            <p>任务状态：{toolBox.remark}</p>
+            <p>最近定位时间：{formatDate(toolBox.updatedAt, 'yyyy/MM/dd HH:mm')}</p>
+            <p>任务状态：{task.remark}</p>
             <p>工具状态：{toolBox.status}</p>
             <p>设备状态: {device.status}</p>
           </div>
@@ -171,8 +189,8 @@ export default class Home extends Component {
                   <div className={styles.routeItem} key={i}>
                     <MarkerIcon type={item.icon}/>
                     <span className={styles.routeHint}>
-                          {item.prefix}位置：{item.address}
-                        </span>
+                      {item.prefix}位置：{item.address}
+                    </span>
                   </div>
                 )
               })
@@ -180,11 +198,13 @@ export default class Home extends Component {
           </div>
 
           <div className={classnames(styles.panelCommon, styles.toolItem)}>
-            <h4>工具箱数：6</h4>
+            <h4>工具箱数：{caclTotal(toolBox.tool, 'count')}</h4>
             <div>
-              <p>工具箱A：3</p>
-              <p>工具箱B：3</p>
-              <p>工具箱C：3</p>
+              {
+                toolBox.tool.map((tool, i) => (
+                  <p key={i}>{tool.name}：{tool.count}</p>
+                ))
+              }
             </div>
           </div>
         </div>
@@ -202,17 +222,18 @@ export default class Home extends Component {
   }
 
   renderStats() {
-    const { detail } = this.props.home
-    const { statusList } = detail
+    const {detail} = this.props.home
+    const {stats} = detail
+    const {hideStats} = this.state
 
     return (
-      <div className={styles.statusContainer}>
+      <div className={classnames(styles.statusContainer, {[styles.statsHide]: hideStats})}>
         <h2 className={styles.statusTitle}>
           数据统计
         </h2>
         <div className={styles.statusBd}>
           {
-            statusList.map((item, i) => (
+            stats.map((item, i) => (
               <div key={i} className={styles.statusItem}>
                 <PercentageCircle
                   radius={55}
@@ -220,29 +241,32 @@ export default class Home extends Component {
                   color={item.color}
                   className={styles.circleWrap}
                 >
-                      <span className={styles.circleLabel}>
-                        {item.num}
-                      </span>
+                  <span className={styles.circleLabel}>
+                    {item.count}
+                  </span>
                 </PercentageCircle>
                 <h4>
-                  {item.name}
+                  {item.status}
                 </h4>
               </div>
             ))
           }
+        </div>
+        <div className={styles.statusToggle} onClick={() => this.toggleStatsPanel()}>
+          <Icon name='arrow-left-hg'/>
         </div>
       </div>
     )
   }
 
   renderMap() {
-    let { markers, mapZoom } = this.props.home
-    let { infobox } = this.state
+    let {markers, mapZoom} = this.props.home
+    let {infobox} = this.state
 
     return (
       <div className={styles.mapContainer}>
         <Map
-          center={this.curCity ? this.curCity : (markers.length > 0 ? markers[0].position : undefined)}
+          center={this.curProvince || this.curCity || (markers.length > 0 ? markers[0].position : undefined)}
           zoom={mapZoom}
         >
           {
@@ -252,7 +276,7 @@ export default class Home extends Component {
                 position={marker.position}
                 icon={marker.icon || 'simple_red'}
                 offset={
-                  this.isCircleMarker
+                  this.customMarker
                     ? new BMap.Size(-40, -40)
                     : new BMap.Size(0, 0)
                 }
@@ -263,20 +287,20 @@ export default class Home extends Component {
                 }}
               >
                 {
-                  this.isCircleMarker &&
+                  this.customMarker &&
                   <div className={styles.circleMarker}>
-                        <span className={styles.markName}>
-                          {marker.name}
-                        </span>
+                    <span className={styles.markName}>
+                      {marker.name}
+                    </span>
                     <span className={styles.markCount}>
-                          {marker.count}
-                        </span>
+                      {marker.count}
+                    </span>
                   </div>
                 }
               </Marker>
             ))
           }
-          <Polyline path={markers} showPath={this.showPath} />
+          <Polyline path={markers} showPath={this.showPath}/>
           <InfoBox
             position={infobox.position}
             isOpen={infobox.isOpen}
@@ -305,10 +329,10 @@ export default class Home extends Component {
   }
 
   render() {
-    const { detail } = this.props.home
+    const {detail} = this.props.home
     return (
       <div className={styles.container}>
-        <Spinner loading={this.props.loading} />
+        <Spinner loading={this.props.loading}/>
         <header className={styles.header}>
           <div className={classnames(styles.headerInner, 'clearfix')}>
             <div className={classnames('fn-left', styles.headerLeft)}>
@@ -335,12 +359,12 @@ export default class Home extends Component {
         </header>
 
         <div className={styles.main}>
-          { detail.statusList && this.renderStats() }
-          { this.renderMap() }
-          { detail.toolBox && this.renderToolBox() }
+          {detail.stats && this.renderStats()}
+          {this.renderMap()}
+          {detail.toolBox && this.renderToolBox()}
         </div>
 
-        <Popover visible={false} />
+        <Popover visible={false}/>
 
       </div>
     )

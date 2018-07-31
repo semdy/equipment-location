@@ -1,5 +1,6 @@
 import fetch from '../utils/request'
-import {geocode} from '../utils/geocoder'
+import { geocode } from '../utils/geocoder'
+import { caclTotal } from "../utils/common"
 
 export async function queryProvinces() {
   let data = await fetch.get('/count/province')
@@ -17,7 +18,6 @@ export async function queryProvinces() {
 
 export async function queryCities(province) {
   let data = await fetch.get('/count/city', { province })
-
   return await Promise.all(data.map(async item => {
     const {lat, lng} = await geocode(item.city)
     return {
@@ -32,11 +32,26 @@ export async function queryCities(province) {
 export async function queryList(city, address, RFID) {
   let data = await fetch.get('/find/toolBox/list', { city, address, RFID })
   return data.map(item => {
-    const {latitude, longitude} = item.position
     return {
       ...item,
-      type: 'toolbox',
-      position: { lat: latitude, lng: longitude }
+      type: 'toolbox'
+    }
+  })
+}
+
+export async function queryStats(province, city) {
+  let data = await fetch.get('/count/status', { province, city })
+  const COLOR_MAP = {
+    '异常': '#ff0000',
+    '占用': '#ff8300',
+    '可调配': '#008000'
+  }
+  const total = caclTotal(data, 'count')
+  return data.map(item => {
+    return {
+      ...item,
+      percent: parseFloat(item.count)/total,
+      color: item.color || COLOR_MAP[item.status] || 'blue'
     }
   })
 }
@@ -44,12 +59,9 @@ export async function queryList(city, address, RFID) {
 export async function queryDetail(RFID) {
   let { task, toolBox, device } = await fetch.get('/find/toolBox/one', { RFID })
   let flows = []
-  let transflow = Array.isArray(task.transflow) ? task.transflow : [task.transflow]
-
-  transflow.forEach((item, i, self) => {
+  task.transflow.forEach((item, i, self) => {
     let icon = ''
     let prefix = ''
-    let position = {}
 
     if (i === 0) {
       icon = 'start'
@@ -64,13 +76,11 @@ export async function queryDetail(RFID) {
       prefix = '经过'
     }
 
-    position = {lat: item.position.latitude, lng: item.position.longitude}
-
     flows.push({
       icon,
       prefix,
-      position,
-      address: item.address || item.addrees,
+      position: item.position,
+      address: item.address,
       date: item.date,
       RFID: toolBox.RFID
     })
@@ -80,7 +90,7 @@ export async function queryDetail(RFID) {
     flows.push({
       icon: 'end',
       prefix: '到达',
-      position: {lat: task.endPosition.latitude, lng: task.endPosition.longitude},
+      position: {lat: task.endPosition.lat, lng: task.endPosition.lng},
       address: task.endAddress,
       RFID: toolBox.RFID
     })
@@ -88,25 +98,8 @@ export async function queryDetail(RFID) {
 
   return {
     toolBox,
+    task: {id: task.id, remark: task.remark},
     flows,
-    device,
-    statusList: [{
-      percent: 0.8,
-      color: "#4472c4",
-      num: 43,
-      name: '可调配'
-    },
-      {
-        percent: 0.6,
-        color: "#ff0000",
-        num: 85,
-        name: '异常'
-      },
-      {
-        percent: 0.4,
-        color: "#06c",
-        num: 45,
-        name: '占用'
-      }]
+    device
   }
 }

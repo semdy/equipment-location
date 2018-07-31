@@ -23,7 +23,7 @@ const codeMessage = {
 function parseParams(params = {}) {
   let result = []
   for(let key in params) {
-    result.push(`${key}=${params[key]}`)
+    result.push(`${key}=${encodeURIComponent(params[key])}`)
   }
 
   return result.join('&')

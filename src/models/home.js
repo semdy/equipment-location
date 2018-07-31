@@ -1,4 +1,4 @@
-import {queryProvinces, queryCities, queryList, queryDetail} from '../services/home'
+import {queryProvinces, queryCities, queryList, queryDetail, queryStats} from '../services/home'
 
 export default {
 
@@ -8,11 +8,6 @@ export default {
     mapZoom: 8,
     markers: [],
     detail: {}
-  },
-
-  subscriptions: {
-    setup({dispatch, history}) {
-    },
   },
 
   effects: {
@@ -38,36 +33,48 @@ export default {
       });
     },
     *fetchDetail({ payload }, { call, put }) {
-      const response = yield call(queryDetail, payload);
+      const detail = yield call(queryDetail, payload.RFID);
+      const stats = yield call(queryStats, payload.province, payload.city);
       yield put({
         type: 'saveDetail',
-        payload: response,
+        payload: {
+          detail,
+          stats
+        },
       });
     }
   },
 
   reducers: {
     saveProvince(state, action) {
-      state.markers = action.payload
-      return state
+      return {
+        ...state,
+        markers: action.payload
+      }
     },
     saveCity(state, action) {
-      state.markers = action.payload
-      state.mapZoom = 12
-      return state
+      return {
+        ...state,
+        markers: action.payload,
+        mapZoom: 12
+      }
     },
     saveSearch(state, action) {
-      state.markers = action.payload
-      state.detail = {}
-      state.mapZoom = 12
-      return state
+      return {
+        ...state,
+        markers: action.payload,
+        detail: {},
+        mapZoom: 12
+      }
     },
     saveDetail(state, action) {
-      const {flows, device, toolBox, statusList} = action.payload
-      state.markers = flows
-      Object.assign(state.detail, {toolBox, device, statusList})
-      return state
+      const {flows, task, device, toolBox} = action.payload.detail
+      const {stats} = action.payload
+      return {
+        ...state,
+        markers: flows,
+        detail: { task, toolBox, device, stats }
+      }
     }
   }
-
-};
+}

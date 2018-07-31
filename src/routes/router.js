@@ -1,11 +1,10 @@
-import React from 'react';
-import { routerRedux, Route, Switch, Redirect } from 'dva/router';
+import React from 'react'
+import { routerRedux, Route, Switch, Redirect } from 'dva/router'
 
-import {Home, Animate} from './asyncLoader'
-
-const { ConnectedRouter } = routerRedux;
+const { ConnectedRouter } = routerRedux
 
 function RouterConfig({ history, app }) {
+  const {Home, Animate} = require('./getRoutes').default(app)
   return (
     <ConnectedRouter history={history}>
       <Switch>
@@ -17,4 +16,4 @@ function RouterConfig({ history, app }) {
   );
 }
 
-export default RouterConfig;
+export default RouterConfig
