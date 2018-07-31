@@ -35,6 +35,9 @@ app.router(require('./routes/router').default);
 // 5. Start
 app.start('#root');
 
-registerServiceWorker();
+// service worker
+if (window.location.protocol === 'https:') {
+  registerServiceWorker();
+}
 
 export default app._store;  // eslint-disable-line
