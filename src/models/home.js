@@ -64,7 +64,7 @@ export default {
         ...state,
         markers: action.payload,
         detail: {},
-        mapZoom: 12
+        mapZoom: 13
       }
     },
     saveDetail(state, action) {
