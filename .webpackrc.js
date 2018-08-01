@@ -65,6 +65,6 @@ export default {
   },
   ignoreMomentLocale: true,
   disableDynamicImport: false,
-  publicPath: '/',
+  publicPath: '',
   hash: true
 };
