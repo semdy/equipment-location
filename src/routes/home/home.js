@@ -336,7 +336,7 @@ export default class Home extends Component {
         <header className={styles.header}>
           <div className={classnames(styles.headerInner, 'clearfix')}>
             <div className={classnames('fn-left', styles.headerLeft)}>
-              <img className={styles.logo} src={require("../../assets/img/logo.jpeg")} alt=""/>
+              <img className={styles.logo} src={require("../../assets/img/logo.jpg")} alt=""/>
               <h1>硬件定位系统</h1>
             </div>
             <div className={classnames('fn-right', styles.headerRight)}>
