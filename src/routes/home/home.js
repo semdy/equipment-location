@@ -266,7 +266,7 @@ export default class Home extends Component {
     return (
       <div className={styles.mapContainer}>
         <Map
-          center={markers.length > 0 ? markers[0].position : (this.curProvince || this.curCity || undefined)}
+          center={this.curCity || (markers.length > 0 ? markers[0].position : undefined)}
           zoom={mapZoom}
         >
           {
