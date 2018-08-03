@@ -23,6 +23,7 @@ const codeMessage = {
 function parseParams(params = {}) {
   let result = []
   for(let key in params) {
+    if (params[key] === undefined) continue
     result.push(`${key}=${encodeURIComponent(params[key])}`)
   }
 

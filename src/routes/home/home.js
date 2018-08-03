@@ -222,8 +222,7 @@ export default class Home extends Component {
   }
 
   renderStats() {
-    const {detail} = this.props.home
-    const {stats} = detail
+    const {stats} = this.props.home
     const {hideStats} = this.state
 
     return (
@@ -329,7 +328,7 @@ export default class Home extends Component {
   }
 
   render() {
-    const {detail} = this.props.home
+    const {detail, stats} = this.props.home
     return (
       <div className={styles.container}>
         <Spinner loading={this.props.loading}/>
@@ -342,14 +341,12 @@ export default class Home extends Component {
             <div className={classnames('fn-right', styles.headerRight)}>
               <Search
                 placeholder="输入目的地查询"
-                value={this.address}
                 onChange={e => this.setAddress(e.target.value)}
                 onSearch={value => this.handleSearch(value)}
                 style={{width: 200, marginRight: 15}}
               />
               <Search
                 placeholder="输入设备id查询"
-                value={this.equiptId}
                 onChange={e => this.setEquiptId(e.target.value)}
                 onSearch={value => this.handleSearch(value)}
                 style={{width: 200}}
@@ -359,7 +356,7 @@ export default class Home extends Component {
         </header>
 
         <div className={styles.main}>
-          {detail.stats && this.renderStats()}
+          {stats.length > 0 && this.renderStats()}
           {this.renderMap()}
           {detail.toolBox && this.renderToolBox()}
         </div>

@@ -7,41 +7,46 @@ export default {
   state: {
     mapZoom: 8,
     markers: [],
+    stats: [],
     detail: {}
   },
 
   effects: {
     *fetchProvinces(_, { call, put }) {
-      const response = yield call(queryProvinces);
+      const response = yield call(queryProvinces)
+      const stats = yield call(queryStats)
       yield put({
         type: 'saveProvince',
-        payload: response
-      });
+        payload: {
+          markers: response,
+          stats
+        }
+      })
     },
     *fetchCities({ payload }, { call, put }) {
       const response = yield call(queryCities, payload.city);
+      const stats = yield call(queryStats, payload.province, payload.city)
       yield put({
         type: 'saveCity',
-        payload: response,
-      });
+        payload: {
+          markers: response,
+          stats
+        }
+      })
     },
     *search({ payload }, { call, put }) {
-      const response = yield call(queryList, payload.city, payload.address, payload.equiptId);
+      const response = yield call(queryList, payload.city, payload.address, payload.equiptId)
       yield put({
         type: 'saveSearch',
         payload: response,
       });
     },
     *fetchDetail({ payload }, { call, put }) {
-      const detail = yield call(queryDetail, payload.RFID);
-      const stats = yield call(queryStats, payload.province, payload.city);
+      const detail = yield call(queryDetail, payload.RFID)
       yield put({
         type: 'saveDetail',
-        payload: {
-          detail,
-          stats
-        },
-      });
+        payload: detail
+      })
     }
   },
 
@@ -49,13 +54,13 @@ export default {
     saveProvince(state, action) {
       return {
         ...state,
-        markers: action.payload
+        ...action.payload
       }
     },
     saveCity(state, action) {
       return {
         ...state,
-        markers: action.payload,
+        ...action.payload,
         mapZoom: 12
       }
     },
@@ -68,12 +73,12 @@ export default {
       }
     },
     saveDetail(state, action) {
-      const {flows, task, device, toolBox} = action.payload.detail
-      const {stats} = action.payload
+      const {flows, task, device, toolBox} = action.payload
       return {
         ...state,
+        stats: [],
         markers: flows,
-        detail: { task, toolBox, device, stats }
+        detail: { task, toolBox, device }
       }
     }
   }
