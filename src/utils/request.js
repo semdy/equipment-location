@@ -74,10 +74,13 @@ export default function http(url, options) {
     }
   }
   else if (newOptions.method === 'GET' && newOptions.body) {
-    if ( url.indexOf('?') > -1 ) {
-      url += `&${parseParams(newOptions.body)}`
-    } else {
-      url += `?${parseParams(newOptions.body)}`
+    let params = parseParams(newOptions.body)
+    if (params) {
+      if (url.indexOf('?') > -1) {
+        url += `&${params}`
+      } else {
+        url += `?${params}`
+      }
     }
     delete newOptions.body
   }
@@ -101,7 +104,7 @@ export default function http(url, options) {
     })
     .catch(err => {
       notification.error({
-        message: '请求异常',
+        message: `请求异常: ${url}`,
         description: err.message || err.stack
       })
     })
