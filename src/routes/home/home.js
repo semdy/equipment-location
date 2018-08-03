@@ -51,7 +51,7 @@ export default class Home extends Component {
       this.props.dispatch({
         type: 'home/fetchCities',
         payload: {
-          city: marker.name
+          province: marker.name
         }
       })
     }
@@ -110,6 +110,7 @@ export default class Home extends Component {
       payload: {
         address: this.address,
         equiptId: this.equiptId,
+        province: this.curProvince,
         city: this.curCity
       }
     })

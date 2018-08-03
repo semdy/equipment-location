@@ -24,8 +24,8 @@ export default {
       })
     },
     *fetchCities({ payload }, { call, put }) {
-      const response = yield call(queryCities, payload.city);
-      const stats = yield call(queryStats, payload.province, payload.city)
+      const response = yield call(queryCities, payload.province)
+      const stats = yield call(queryStats, payload.province)
       yield put({
         type: 'saveCity',
         payload: {
@@ -36,10 +36,14 @@ export default {
     },
     *search({ payload }, { call, put }) {
       const response = yield call(queryList, payload.city, payload.address, payload.equiptId)
+      const stats = yield call(queryStats, payload.province, payload.city)
       yield put({
         type: 'saveSearch',
-        payload: response,
-      });
+        payload: {
+          markers: response,
+          stats
+        }
+      })
     },
     *fetchDetail({ payload }, { call, put }) {
       const detail = yield call(queryDetail, payload.RFID)
@@ -67,7 +71,7 @@ export default {
     saveSearch(state, action) {
       return {
         ...state,
-        markers: action.payload,
+        ...action.payload,
         detail: {},
         mapZoom: 13
       }
