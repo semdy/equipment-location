@@ -62,7 +62,7 @@ export async function queryStats(province, city) {
     return data.map(item => {
       return {
         ...item,
-        percent: parseFloat(item.count) / total,
+        percent: parseFloat(item.count) / total || 0,
         color: item.color || COLOR_MAP[item.status] || 'blue'
       }
     })
