@@ -201,7 +201,7 @@ export default class Home extends Component {
             <h4>工具箱数：{caclTotal(toolBox.tool, 'count')}</h4>
             <div>
               {
-                toolBox.tool.map((tool, i) => (
+                toolBox.tool && toolBox.tool.map((tool, i) => (
                   <p key={i}>{tool.name}：{tool.count}</p>
                 ))
               }

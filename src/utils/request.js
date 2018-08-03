@@ -99,7 +99,12 @@ export default function http(url, options) {
       }
       return res.data
     })
-    .catch(err => ({ err }))
+    .catch(err => {
+      notification.error({
+        message: '请求异常',
+        description: err.message || err.stack
+      })
+    })
 }
 
 http.get = (url, body) => {
