@@ -36,9 +36,9 @@ export async function queryCities(province) {
   }
 }
 
-export async function queryList(city, address, RFID) {
+export async function queryList(city, address, RFID, status) {
   try {
-    let data = await fetch.get('/find/toolBox/list', {city, address, RFID})
+    let data = await fetch.get('/find/toolBox/list', {city, address, RFID, status})
     return data.map(item => {
       return {
         ...item,

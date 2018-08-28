@@ -30,6 +30,7 @@ export default class Home extends Component {
   curCity = ''
   address = ''
   equiptId = ''
+  statStatus = ''
   customMarker = true
   showPath = false
 
@@ -111,7 +112,8 @@ export default class Home extends Component {
         address: this.address,
         equiptId: this.equiptId,
         province: this.curProvince,
-        city: this.curCity
+        city: this.curCity,
+        status: this.statStatus
       }
     })
     this.customMarker = false
@@ -121,6 +123,11 @@ export default class Home extends Component {
       toolyhide: false,
       hideStats: false
     })
+  }
+
+  filterByStatus(status) {
+    this.statStatus = status
+    this.handleSearch()
   }
 
   toggleToolPanel(type) {
@@ -234,7 +241,11 @@ export default class Home extends Component {
         <div className={styles.statusBd}>
           {
             stats.map((item, i) => (
-              <div key={i} className={styles.statusItem}>
+              <div
+                key={i}
+                className={styles.statusItem}
+                onClick={() => this.filterByStatus(item.status)}
+              >
                 <PercentageCircle
                   radius={55}
                   percent={item.percent}

@@ -35,7 +35,7 @@ export default {
       })
     },
     *search({ payload }, { call, put }) {
-      const response = yield call(queryList, payload.city, payload.address, payload.equiptId)
+      const response = yield call(queryList, payload.city, payload.address, payload.equiptId, payload.status)
       const stats = yield call(queryStats, payload.province, payload.city)
       yield put({
         type: 'saveSearch',
