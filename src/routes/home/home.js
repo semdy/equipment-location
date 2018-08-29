@@ -13,7 +13,7 @@ import {
   PercentageCircle
 } from '../../components'
 import classnames from 'classnames'
-import {Input, Popover} from 'antd'
+import {Input, Popover, notification} from 'antd'
 import {formatDate, caclTotal} from '../../utils/common'
 import styles from './home.less'
 
@@ -33,6 +33,7 @@ export default class Home extends Component {
   statStatus = ''
   customMarker = true
   showPath = false
+  queryLevel = 0
 
   state = {
     infobox: {
@@ -49,6 +50,7 @@ export default class Home extends Component {
   handleMarkerClick(marker) {
     if (marker.type === 'province') {
       this.curProvince = marker.name
+      this.queryLevel = 1
       this.props.dispatch({
         type: 'home/fetchCities',
         payload: {
@@ -58,10 +60,12 @@ export default class Home extends Component {
     }
     else if (marker.type === 'city') {
       this.curCity = marker.name
+      this.queryLevel = 2
       this.handleSearch()
     }
     else if (marker.type === 'toolbox') {
       this.showPath = true
+      this.queryLevel = 3
       this.handleMarkerMouseout()
       this.props.dispatch({
         type: 'home/fetchDetail',
@@ -116,6 +120,14 @@ export default class Home extends Component {
         status: this.statStatus
       }
     })
+    .then(() => {
+      if (this.props.home.markers.length === 0) {
+        notification.error({
+          message: '提示',
+          description: '当前位置没有设备信息'
+        })
+      }
+    })
     this.customMarker = false
     this.showPath = false
     this.setState({
@@ -123,6 +135,29 @@ export default class Home extends Component {
       toolyhide: false,
       hideStats: false
     })
+  }
+
+  gotoUpLevel() {
+    this.queryLevel = Math.max(0, --this.queryLevel)
+
+    if (this.queryLevel === 0) {
+      this.customMarker = true
+      this.props.dispatch({
+        type: 'home/fetchProvinces'
+      })
+    }
+    else if (this.queryLevel === 1) {
+      this.customMarker = true
+      this.props.dispatch({
+        type: 'home/fetchCities',
+        payload: {
+          province: this.curCity
+        }
+      })
+    }
+    else if (this.queryLevel === 2) {
+      this.handleSearch()
+    }
   }
 
   filterByStatus(status) {
@@ -151,10 +186,60 @@ export default class Home extends Component {
     })
   }
 
+  getMapCenter() {
+    let {markers} = this.props.home
+    return this.curCity || this.address || markers.length > 0 && markers[0].position || this.curProvince || undefined
+  }
+
   componentDidMount() {
     this.props.dispatch({
       type: 'home/fetchProvinces'
+    }).then(() => {
+      const {markers} = this.props.home
+      this.curProvince = markers.length > 0 ? markers[0].name : ''
+      this.queryLevel = 0
     })
+  }
+
+  renderStats() {
+    const {stats} = this.props.home
+    const {hideStats} = this.state
+
+    return (
+      <div className={classnames(styles.statusContainer, {[styles.statsHide]: hideStats})}>
+        <h2 className={styles.statusTitle}>
+          数据统计
+        </h2>
+        <div className={styles.statusBd}>
+          {
+            stats.map((item, i) => (
+              <div
+                key={i}
+                className={styles.statusItem}
+                onClick={() => this.filterByStatus(item.status)}
+              >
+                <PercentageCircle
+                  radius={55}
+                  percent={item.percent}
+                  color={item.color}
+                  className={styles.circleWrap}
+                >
+                  <span className={styles.circleLabel}>
+                    {item.count}
+                  </span>
+                </PercentageCircle>
+                <h4>
+                  {item.status}
+                </h4>
+              </div>
+            ))
+          }
+        </div>
+        <div className={styles.statusToggle} onClick={() => this.toggleStatsPanel()}>
+          <Icon name='arrow-left-hg'/>
+        </div>
+      </div>
+    )
   }
 
   renderToolBox() {
@@ -229,55 +314,14 @@ export default class Home extends Component {
     )
   }
 
-  renderStats() {
-    const {stats} = this.props.home
-    const {hideStats} = this.state
-
-    return (
-      <div className={classnames(styles.statusContainer, {[styles.statsHide]: hideStats})}>
-        <h2 className={styles.statusTitle}>
-          数据统计
-        </h2>
-        <div className={styles.statusBd}>
-          {
-            stats.map((item, i) => (
-              <div
-                key={i}
-                className={styles.statusItem}
-                onClick={() => this.filterByStatus(item.status)}
-              >
-                <PercentageCircle
-                  radius={55}
-                  percent={item.percent}
-                  color={item.color}
-                  className={styles.circleWrap}
-                >
-                  <span className={styles.circleLabel}>
-                    {item.count}
-                  </span>
-                </PercentageCircle>
-                <h4>
-                  {item.status}
-                </h4>
-              </div>
-            ))
-          }
-        </div>
-        <div className={styles.statusToggle} onClick={() => this.toggleStatsPanel()}>
-          <Icon name='arrow-left-hg'/>
-        </div>
-      </div>
-    )
-  }
-
   renderMap() {
-    let {markers, mapZoom} = this.props.home
-    let {infobox} = this.state
+    let { markers, mapZoom, detail } = this.props.home
+    let { infobox } = this.state
 
     return (
       <div className={styles.mapContainer}>
         <Map
-          center={this.curCity || (markers.length > 0 ? markers[0].position : undefined)}
+          center={this.getMapCenter()}
           zoom={mapZoom}
         >
           {
@@ -335,6 +379,16 @@ export default class Home extends Component {
             </div>
           </InfoBox>
         </Map>
+        {
+          this.queryLevel > 0 &&
+          <div className={classnames(styles.toUpperLevel, {[styles.toLeft]: !!detail.toolBox})}
+               onClick={() => this.gotoUpLevel()}
+          >
+            <Icon name='upper-level' size='small' style={{marginRight: 5}} />
+            <span>返回上一级</span>
+          </div>
+        }
+
       </div>
     )
   }

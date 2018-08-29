@@ -46,6 +46,26 @@
   height: 100%;
 }
 
+.toUpperLevel {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 6px 12px;
+  user-select: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  &.toLeft {
+    right: auto;
+    left: 20px;
+  }
+}
+
 .statusContainer {
   position: absolute;
   left: 0;
@@ -193,7 +213,7 @@
   }
 
   p {
-    margin-bottom: 1em;
+    margin-bottom: .5em;
   }
 }
 
@@ -240,7 +260,12 @@
   border-radius: 50%;
   color: #fff;
   font-weight: bold;
-  background-color: rgba(255, 0, 0, .9);
+  cursor: zoom-in;
+  background-color: rgba(255, 0, 0, .85);
+
+  &:hover {
+    background-color: #cc0000;
+  }
 }
 
 .markCount {

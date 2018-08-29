@@ -1,5 +1,5 @@
-import fetch from 'dva/fetch';
-import { notification } from 'antd';
+import fetch from 'dva/fetch'
+import {notification} from 'antd'
 
 const SERVER_URL = 'http://testsrv.kurite.cn/qs'
 const codeMessage = {
@@ -18,11 +18,11 @@ const codeMessage = {
   502: '网关错误。',
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
-};
+}
 
 function parseParams(params = {}) {
   let result = []
-  for(let key in params) {
+  for (let key in params) {
     if (params[key] === undefined) continue
     result.push(`${key}=${encodeURIComponent(params[key])}`)
   }
@@ -32,17 +32,17 @@ function parseParams(params = {}) {
 
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
-    return response;
+    return response
   }
-  const errortext = codeMessage[response.status] || response.statusText;
+  const errortext = codeMessage[response.status] || response.statusText
   notification.error({
     message: `请求错误 ${response.status}: ${response.url}`,
     description: errortext,
-  });
-  const error = new Error(errortext);
-  error.name = response.status;
-  error.response = response;
-  throw error;
+  })
+  const error = new Error(errortext)
+  error.name = response.status
+  error.response = response
+  throw error
 }
 
 /**
@@ -55,22 +55,22 @@ function checkStatus(response) {
 export default function http(url, options) {
   const defaultOptions = {
     credentials: 'include',
-  };
-  const newOptions = { ...defaultOptions, ...options };
+  }
+  const newOptions = {...defaultOptions, ...options}
   if (newOptions.method === 'POST' || newOptions.method === 'PUT') {
     if (!(newOptions.body instanceof FormData)) {
       newOptions.headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
         ...newOptions.headers,
-      };
-      newOptions.body = JSON.stringify(newOptions.body);
+      }
+      newOptions.body = JSON.stringify(newOptions.body)
     } else {
       newOptions.headers = {
         Accept: 'application/json',
         'Content-Type': 'multipart/form-data',
         ...newOptions.headers,
-      };
+      }
     }
   }
   else if (newOptions.method === 'GET' && newOptions.body) {
