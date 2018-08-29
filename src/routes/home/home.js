@@ -162,6 +162,7 @@ export default class Home extends Component {
 
   filterByStatus(status) {
     this.statStatus = status
+    this.queryLevel = 1
     this.handleSearch()
   }
 
